@@ -63,21 +63,24 @@
       const response = await fetch('data.json');
       gameData = await response.json();
       document.querySelector('#game-title').textContent = gameData.title;
-      renderScene(getSceneIdFromHash());
+      renderScene(getSceneIdFromQuery());
     }
 
-    function getSceneIdFromHash() {
-      const hash = window.location.hash.slice(1);
-      const sceneId = parseInt(hash, 10);
+    function getSceneIdFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const sceneId = parseInt(params.get('sceneId'), 10);
       if (isNaN(sceneId)) {
-        setSceneIdToHash(1); // 如果 hash 无效或为空，设置默认场景ID为1
+        setSceneIdToQuery(1);
         return 1;
       }
       return sceneId;
     }
 
-    function setSceneIdToHash(sceneId) {
-      window.location.hash = `#${sceneId}`;
+    function setSceneIdToQuery(sceneId) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('sceneId', sceneId);
+      window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+      renderScene(sceneId);
     }
 
     function renderScene(sceneId) {
@@ -86,14 +89,14 @@
       if (!scene) {
         console.error(`Scene ${sceneId} not found`);
         if (previousSceneId !== null) {
-          setSceneIdToHash(previousSceneId);
+          setSceneIdToQuery(previousSceneId);
         } else {
-          setSceneIdToHash(1);
+          setSceneIdToQuery(1);
         }
         return;
       }
 
-      previousSceneId = sceneId; // 更新上一个sceneId
+      previousSceneId = sceneId;
 
       document.querySelector('#scene-description').innerHTML = scene.description;
       const endingMessageElement = document.querySelector('#ending-message');
@@ -106,7 +109,7 @@
         const button = document.createElement('p');
         button.textContent = option.text;
         button.onclick = () => {
-          setSceneIdToHash(option.target);
+          setSceneIdToQuery(option.target);
         };
         optionsContainer.appendChild(button);
       });
@@ -114,12 +117,13 @@
 
     document.querySelector('#game-title').onclick = () => {
       if (confirm('确定要返回初始场景吗？')) {
-        setSceneIdToHash(1);
+        setSceneIdToQuery(1);
       }
     };
 
-    window.addEventListener('hashchange', () => {
-      renderScene(getSceneIdFromHash());
+    window.addEventListener('popstate', () => {
+      console.log('popstate event triggered');
+      renderScene(getSceneIdFromQuery());
     });
 
     loadGameData();
