@@ -95,7 +95,11 @@
       if (!scene) {
         console.error(`Scene ${sceneId} not found`);
         if (previousSceneId !== null) {
-          setSceneIdToQuery(previousSceneId);
+          if (confirm('好像没找到这个场景欸……\n要返回初始场景吗？')) {
+            setSceneIdToQuery(1);
+          } else {
+            setSceneIdToQuery(previousSceneId);
+          }
         } else {
           setSceneIdToQuery(1);
         }
