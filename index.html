@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>国男大冒险</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      text-align: center;
+    }
+
+    #game-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #game-title {
+      cursor: pointer;
+    }
+
+    #scene-description {
+      text-align: left;
+      font-size: 20px;
+    }
+
+    #ending-message {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #options p {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    #options p:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game-container">
+    <h1 id="game-title"></h1>
+    <p id="scene-description"></p>
+    <p id="ending-message"></p>
+    <div id="options"></div>
+  </div>
+  <script>
+    let gameData;
+    let previousSceneId = null;
+
+    async function loadGameData() {
+      const response = await fetch('data.json');
+      gameData = await response.json();
+      document.querySelector('#game-title').textContent = gameData.title;
+      renderScene(getSceneIdFromHash());
+    }
+
+    function getSceneIdFromHash() {
+      const hash = window.location.hash.slice(1);
+      const sceneId = parseInt(hash, 10);
+      if (isNaN(sceneId)) {
+        setSceneIdToHash(1); // 如果 hash 无效或为空，设置默认场景ID为1
+        return 1;
+      }
+      return sceneId;
+    }
+
+    function setSceneIdToHash(sceneId) {
+      window.location.hash = `#${sceneId}`;
+    }
+
+    function renderScene(sceneId) {
+      console.log(`Rendering scene ${sceneId}`);
+      const scene = gameData.scenes.find(s => s.id === sceneId);
+      if (!scene) {
+        console.error(`Scene ${sceneId} not found`);
+        if (previousSceneId !== null) {
+          setSceneIdToHash(previousSceneId);
+        } else {
+          setSceneIdToHash(1);
+        }
+        return;
+      }
+
+      previousSceneId = sceneId; // 更新上一个sceneId
+
+      document.querySelector('#scene-description').innerHTML = scene.description;
+      const endingMessageElement = document.querySelector('#ending-message');
+      endingMessageElement.textContent = scene.ending ? `结局：${scene.ending}` : '';
+
+      const optionsContainer = document.querySelector('#options');
+      optionsContainer.innerHTML = '';
+
+      scene.options.forEach(option => {
+        const button = document.createElement('p');
+        button.textContent = option.text;
+        button.onclick = () => {
+          setSceneIdToHash(option.target);
+        };
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    document.querySelector('#game-title').onclick = () => {
+      if (confirm('确定要返回初始场景吗？')) {
+        setSceneIdToHash(1);
+      }
+    };
+
+    window.addEventListener('hashchange', () => {
+      renderScene(getSceneIdFromHash());
+    });
+
+    loadGameData();
+  </script>
+</body>
+
+</html>
