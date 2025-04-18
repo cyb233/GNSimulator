@@ -62,8 +62,14 @@
     async function loadGameData() {
       const response = await fetch('data.json');
       gameData = await response.json();
+
       document.querySelector('#game-title').textContent = gameData.title;
       renderScene(getSceneIdFromQuery());
+
+      if (!sessionStorage.getItem('hasVisited') && gameData.welcomeMessage) {
+        alert(gameData.welcomeMessage);
+        sessionStorage.setItem('hasVisited', 'true');
+      }
     }
 
     function getSceneIdFromQuery() {
@@ -98,7 +104,14 @@
 
       previousSceneId = sceneId;
 
-      document.querySelector('#scene-description').innerHTML = scene.description;
+      const sceneDescriptionElement = document.querySelector('#scene-description');
+      sceneDescriptionElement.innerHTML = '';
+      scene.description.split('\n').forEach(line => {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = line;
+        sceneDescriptionElement.appendChild(paragraph);
+      });
+
       const endingMessageElement = document.querySelector('#ending-message');
       endingMessageElement.textContent = scene.ending ? `结局：${scene.ending}` : '';
 
@@ -120,11 +133,6 @@
         setSceneIdToQuery(1);
       }
     };
-
-    window.addEventListener('popstate', () => {
-      console.log('popstate event triggered');
-      renderScene(getSceneIdFromQuery());
-    });
 
     loadGameData();
   </script>
