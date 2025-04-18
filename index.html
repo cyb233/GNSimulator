@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>国男大冒险</title>
+  <meta name="title" content="国男大冒险 - 互动式文字冒险游戏">
+  <meta name="description" content="国男大冒险是一款互动式文字冒险游戏，探索不同场景并解锁多种结局。">
+  <meta name="keywords" content="国男大冒险, 文字冒险游戏, 互动游戏, 多结局, 冒险游戏">
+  <title>国男大冒险 - 互动式文字冒险游戏</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -49,12 +52,27 @@
 </head>
 
 <body>
-  <div id="game-container">
-    <h1 id="game-title"></h1>
-    <p id="scene-description"></p>
-    <p id="ending-message"></p>
-    <div id="options"></div>
-  </div>
+  <header>
+    <h1 id="game-title">国男大冒险</h1>
+  </header>
+  <main id="game-container">
+    <section id="scene-description">
+      <p>你是某国男性，简称国男，20岁，是学生，就读于某高校。</p>
+      <p>今天你没有课，你决定:</p>
+    </section>
+    <section>
+      <p id="ending-message"></p>
+    </section>
+    <section id="options">
+      <p>待在宿舍</p>
+      <p>出去逛逛</p>
+    </section>
+  </main>
+  <footer style="margin-top: 20px;">
+    <a href="https://github.com/cyb233/GNSimulator" target="_blank">
+      <img src="https://img.shields.io/badge/GitHub-cyb233/GNSimulator-blue?logo=github" alt="cyb233/GNSimulator">
+    </a>
+  </footer>
   <script>
     let gameData;
     let previousSceneId = null;
@@ -159,11 +177,6 @@
 
     loadGameData();
   </script>
-  <footer style="margin-top: 20px;">
-    <a href="https://github.com/cyb233/GNSimulator" target="_blank">
-      <img src="https://img.shields.io/badge/GitHub-cyb233/GNSimulator-blue?logo=github" alt="cyb233/GNSimulator">
-    </a>
-  </footer>
 </body>
 
 </html>
